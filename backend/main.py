@@ -2,7 +2,7 @@ from typing import Optional, List
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 # Ensure all necessary components from your scraper are imported
-from tokopaedi import search, get_product, get_reviews, SearchFilters
+from src.tokopaedi import search, get_product, get_reviews, SearchFilters
 
 app = FastAPI(title="Tokopedia Scraper API")
 
