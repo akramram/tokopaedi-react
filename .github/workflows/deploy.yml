@@ -1,4 +1,5 @@
 name: Deploy to GitHub Pages
+# Updated to ensure proper GitHub Pages deployment
 
 on:
   push:
