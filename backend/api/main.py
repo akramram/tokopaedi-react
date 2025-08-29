@@ -9,7 +9,7 @@ app = FastAPI(title="Tokopedia Scraper API")
 # Define the allowed origins for CORS (your frontend's address)
 origins = [
     "http://localhost:3000",
-    "https://your-username.github.io",  # Replace with your GitHub username
+    "https://akramram.github.io",  # Replace with your GitHub username
     "https://tokopaedi-react.vercel.app",  # If using Vercel for frontend too
     "*"  # Allow all origins for demo purposes - restrict in production
 ]
