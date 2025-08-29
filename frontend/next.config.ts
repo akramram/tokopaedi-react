@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   },
   // Configure for GitHub Pages deployment
   basePath: process.env.NODE_ENV === 'production' ? '/tokopaedi-react' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/tokopaedi-react/' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/tokopaedi-react' : '',
 };
 
 export default nextConfig;
