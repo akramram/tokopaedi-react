@@ -79,7 +79,7 @@ export default function Home() {
         bebasOngkirExtra: bebasOngkirExtra || undefined,
       };
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://tokopaedibe-550ipor0q-akramrams-projects.vercel.app';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://tokopaedibe.vercel.app';
       const response = await axios.get(`${apiUrl}/search/${keyword}`, { params });
 
       console.log('API Response Data:', response.data);
