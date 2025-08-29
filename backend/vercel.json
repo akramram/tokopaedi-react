@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "functions": {
+    "api/main.py": {
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/main"
+    }
+  ],
+  "env": {
+    "PYTHONPATH": "."
+  }
+}

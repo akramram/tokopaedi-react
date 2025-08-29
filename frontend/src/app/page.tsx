@@ -16,8 +16,8 @@ type searchResult = {
   rating: number
   image: string
   shop: Shop
-  product_detail: any
-  product_reviews: any
+  product_detail: unknown
+  product_reviews: unknown
 }
 
 type Shop = {
@@ -79,7 +79,8 @@ export default function Home() {
         bebasOngkirExtra: bebasOngkirExtra || undefined,
       };
 
-      const response = await axios.get(`http://127.0.0.1:8000/search/${keyword}`, { params });
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+      const response = await axios.get(`${apiUrl}/search/${keyword}`, { params });
 
       console.log('API Response Data:', response.data);
       if (Array.isArray(response.data)) {
@@ -145,7 +146,7 @@ export default function Home() {
             </div>
             <div>
               <label htmlFor="rating" className="block mb-1 font-medium text-gray-300 text-sm">Min Rating</label>
-              <select id="rating" value={rating} onChange={(e:any) => setRating(e.target.value)} className="bg-gray-700 px-3 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500 w-full text-white">
+              <select id="rating" value={rating} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRating(Number(e.target.value))} className="bg-gray-700 px-3 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500 w-full text-white">
                   <option value="0">Any</option>
                   <option value="1">1 ★ & up</option>
                   <option value="2">2 ★ & up</option>
@@ -159,7 +160,7 @@ export default function Home() {
               <select
                 id="condition"
                 value={condition}
-                onChange={(e:any) => setCondition(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCondition(Number(e.target.value))}
                 className="bg-gray-700 px-3 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500 w-full text-white"
               >
                   <option value="0">Any</option>
@@ -172,7 +173,7 @@ export default function Home() {
                 <select
                     id="latestProduct"
                     value={latestProduct}
-                    onChange={(e: any) => setLatestProduct(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLatestProduct(Number(e.target.value))}
                     className="bg-gray-700 px-3 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500 w-full text-white"
                 >
                     <option value="0">Any</option>
