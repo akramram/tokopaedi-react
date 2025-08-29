@@ -194,7 +194,7 @@ export default function Home() {
         {error && <p className="my-4 text-red-500 text-center">{error}</p>}
 
         {!loading && results.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
             {results.map((product) => (
               <div 
                 key={product.product_id} 
@@ -238,7 +238,7 @@ export default function Home() {
                     rel="noopener noreferrer" 
                     className="block text-white hover:text-green-400 font-medium text-sm leading-tight transition-colors duration-200"
                   >
-                    <h3 className="line-clamp-2 min-h-[2.5rem]">{product.name}</h3>
+                    <h3 className="min-h-[3.75rem]">{product.name}</h3>
                   </a>
 
                   {/* Price Section */}
