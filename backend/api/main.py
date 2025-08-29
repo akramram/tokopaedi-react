@@ -9,9 +9,9 @@ app = FastAPI(title="Tokopedia Scraper API")
 # Define the allowed origins for CORS (your frontend's address)
 origins = [
     "http://localhost:3000",
-    "https://your-username.github.io",  # Replace with your GitHub username
+    "https://akramram.github.io",  # Replace with your GitHub username
     "https://tokopaedi-react.vercel.app",  # If using Vercel for frontend too
-    "*"  # Allow all origins for demo purposes - restrict in production
+    # "*"  # Allow all origins for demo purposes - restrict in production
 ]
 
 # Add the CORS middleware to your FastAPI application
@@ -31,7 +31,7 @@ def read_root():
 @app.get("/search/{keyword}")
 def search_products(
     keyword: str,
-    max_result: int = 10,
+    max_result: int = 30,
     # Define all query parameters with defaults and aliases for the frontend
     min_price: int = Query(0, alias="minPrice"),
     max_price: int = Query(0, alias="maxPrice"),
