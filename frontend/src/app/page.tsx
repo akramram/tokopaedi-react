@@ -194,49 +194,133 @@ export default function Home() {
         {error && <p className="my-4 text-red-500 text-center">{error}</p>}
 
         {!loading && results.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="bg-gray-800 shadow-md rounded-lg min-w-full">
-              <thead className="bg-gray-700">
-                <tr>
-                  <th className="p-4 font-semibold text-gray-300 text-left">Image</th>
-                  <th className="p-4 font-semibold text-gray-300 text-left">Product Name</th>
-                  <th className="p-4 font-semibold text-gray-300 text-left">Price</th>
-                  <th className="p-4 font-semibold text-gray-300 text-left">Original Price</th>
-                  <th className="p-4 font-semibold text-gray-300 text-left">Rating</th>
-                  <th className="p-4 font-semibold text-gray-300 text-left">Shop</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-700">
-                {results.map((product) => (
-                  <tr key={product.product_id} className="hover:bg-gray-700 transition-colors">
-                    <td className="p-4"><img src={product.image} alt={product.name} className="rounded-md w-16 h-16 object-cover"/></td>
-                    <td className="p-4 font-medium"><a 
+          <>
+            {/* Mobile Card Layout */}
+            <div className="block md:hidden space-y-4">
+              {results.map((product) => (
+                <div key={product.product_id} className="bg-gray-800 rounded-lg p-4 shadow-md border border-gray-700 hover:border-green-500 transition-all duration-200 active:scale-[0.98] touch-manipulation">
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0">
+                      <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="rounded-md w-20 h-20 sm:w-24 sm:h-24 object-cover border border-gray-600"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <a 
                         href={product.url} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="text-green-400 hover:underline"
+                        className="text-green-400 hover:text-green-300 font-medium text-sm sm:text-base leading-tight block mb-2 active:text-green-200 transition-colors"
                       >
-                        {product.name}
-                      </a></td>
-                    <td className="p-4 text-green-400">{product.real_price_text}</td>
-                    <td className="p-4 text-green-400">{product.original_price}</td>
-                    <td className="p-4">{product.rating} ★</td>
-                    <td className="p-4">
-                      
-                      <a 
-                        href={product.shop.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="text-green-400 hover:underline"
-                      >
-                        {product.shop.name}
+                        <span className="line-clamp-2">{product.name}</span>
                       </a>
-                      <span className="block text-gray-400 text-sm">{product.shop.city}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-green-400 font-semibold text-lg">{product.real_price_text}</span>
+                          {product.original_price && product.original_price !== product.real_price_text && (
+                            <span className="text-gray-400 line-through text-sm">{product.original_price}</span>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-yellow-400 flex items-center gap-1">
+                            <span>★</span>
+                            <span>{product.rating}</span>
+                          </span>
+                          <span className="text-gray-400">{product.sold_count} sold</span>
+                        </div>
+                        <a 
+                          href={product.shop.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="text-green-400 hover:text-green-300 text-sm active:text-green-200 transition-colors"
+                        >
+                          <div className="flex items-center gap-1">
+                            <span>{product.shop.name}</span>
+                            {product.shop.is_official && (
+                              <span className="bg-green-600 text-white text-xs px-1 py-0.5 rounded">Official</span>
+                            )}
+                          </div>
+                          <span className="text-gray-400 text-xs">{product.shop.city}</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table Layout */}
+            <div className="hidden md:block">
+              <div className="overflow-x-auto shadow-lg rounded-lg border border-gray-700">
+                <table className="bg-gray-800 min-w-full">
+                  <thead className="bg-gray-700 sticky top-0">
+                    <tr>
+                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base whitespace-nowrap">Image</th>
+                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base min-w-[200px] lg:min-w-[300px]">Product Name</th>
+                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base whitespace-nowrap">Price</th>
+                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base whitespace-nowrap">Original Price</th>
+                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base whitespace-nowrap">Rating</th>
+                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base whitespace-nowrap">Sold</th>
+                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base min-w-[150px]">Shop</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {results.map((product) => (
+                      <tr key={product.product_id} className="hover:bg-gray-700 transition-colors duration-150">
+                        <td className="p-3 lg:p-4">
+                          <img 
+                            src={product.image} 
+                            alt={product.name} 
+                            className="rounded-md w-12 h-12 lg:w-16 lg:h-16 object-cover border border-gray-600"
+                            loading="lazy"
+                          />
+                        </td>
+                        <td className="p-3 lg:p-4">
+                          <a 
+                            href={product.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-green-400 hover:text-green-300 font-medium text-sm lg:text-base hover:underline transition-colors duration-150"
+                          >
+                            <span className="line-clamp-2">{product.name}</span>
+                          </a>
+                        </td>
+                        <td className="p-3 lg:p-4 text-green-400 font-semibold text-sm lg:text-base whitespace-nowrap">{product.real_price_text}</td>
+                        <td className="p-3 lg:p-4 text-gray-400 text-sm lg:text-base whitespace-nowrap">
+                          {product.original_price && product.original_price !== product.real_price_text ? (
+                            <span className="line-through">{product.original_price}</span>
+                          ) : (
+                            <span>-</span>
+                          )}
+                        </td>
+                        <td className="p-3 lg:p-4 text-yellow-400 text-sm lg:text-base whitespace-nowrap">{product.rating} ★</td>
+                        <td className="p-3 lg:p-4 text-gray-300 text-sm lg:text-base whitespace-nowrap">{product.sold_count}</td>
+                        <td className="p-3 lg:p-4">
+                          <a 
+                            href={product.shop.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-green-400 hover:text-green-300 hover:underline transition-colors duration-150"
+                          >
+                            <div className="flex items-center gap-1 text-sm lg:text-base">
+                              <span className="truncate">{product.shop.name}</span>
+                              {product.shop.is_official && (
+                                <span className="bg-green-600 text-white text-xs px-1 py-0.5 rounded flex-shrink-0">Official</span>
+                              )}
+                            </div>
+                          </a>
+                          <span className="block text-gray-400 text-xs lg:text-sm truncate">{product.shop.city}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
         ) : (
           !loading && !error && <p className="text-gray-500 text-center">No results to show. Try a new search!</p>
         )}
