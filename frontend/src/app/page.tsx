@@ -194,135 +194,115 @@ export default function Home() {
         {error && <p className="my-4 text-red-500 text-center">{error}</p>}
 
         {!loading && results.length > 0 ? (
-          <>
-            {/* Mobile Card Layout */}
-            <div className="block md:hidden space-y-4">
-              {results.map((product) => (
-                <div key={product.product_id} className="bg-gray-800 rounded-lg p-4 shadow-md border border-gray-700 hover:border-green-500 transition-all duration-200 active:scale-[0.98] touch-manipulation">
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0">
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className="rounded-md w-20 h-20 sm:w-24 sm:h-24 object-cover border border-gray-600"
-                        loading="lazy"
-                      />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            {results.map((product) => (
+              <div 
+                key={product.product_id} 
+                className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 hover:border-green-500 hover:shadow-xl transition-all duration-300 overflow-hidden group touch-manipulation active:scale-[0.98]"
+              >
+                {/* Product Image Section */}
+                <div className="relative bg-gray-700 aspect-square p-4">
+                  <a 
+                    href={product.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block w-full h-full"
+                  >
+                    <img 
+                      src={product.image} 
+                      alt={product.name} 
+                      className="w-full h-full object-cover rounded-lg border border-gray-600 group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  </a>
+                  {/* Discount Badge */}
+                  {product.original_price && product.original_price !== product.real_price_text && (
+                    <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      SALE
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <a 
-                        href={product.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="text-green-400 hover:text-green-300 font-medium text-sm sm:text-base leading-tight block mb-2 active:text-green-200 transition-colors"
-                      >
-                        <span className="line-clamp-2">{product.name}</span>
-                      </a>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-green-400 font-semibold text-lg">{product.real_price_text}</span>
-                          {product.original_price && product.original_price !== product.real_price_text && (
-                            <span className="text-gray-400 line-through text-sm">{product.original_price}</span>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-yellow-400 flex items-center gap-1">
-                            <span>★</span>
-                            <span>{product.rating}</span>
-                          </span>
-                          <span className="text-gray-400">{product.sold_count} sold</span>
-                        </div>
-                        <a 
-                          href={product.shop.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="text-green-400 hover:text-green-300 text-sm active:text-green-200 transition-colors"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>{product.shop.name}</span>
-                            {product.shop.is_official && (
-                              <span className="bg-green-600 text-white text-xs px-1 py-0.5 rounded">Official</span>
-                            )}
-                          </div>
-                          <span className="text-gray-400 text-xs">{product.shop.city}</span>
-                        </a>
-                      </div>
+                  )}
+                  {/* Official Store Badge */}
+                  {product.shop.is_official && (
+                    <div className="absolute top-2 right-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      Official
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Information Section */}
+                <div className="p-4 space-y-3">
+                  {/* Product Title */}
+                  <a 
+                    href={product.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="block text-white hover:text-green-400 font-medium text-sm leading-tight transition-colors duration-200"
+                  >
+                    <h3 className="line-clamp-2 min-h-[2.5rem]">{product.name}</h3>
+                  </a>
+
+                  {/* Price Section */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-green-400 font-bold text-lg">{product.real_price_text}</span>
+                      {product.original_price && product.original_price !== product.real_price_text && (
+                        <span className="text-gray-400 line-through text-sm">{product.original_price}</span>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
 
-            {/* Desktop Table Layout */}
-            <div className="hidden md:block">
-              <div className="overflow-x-auto shadow-lg rounded-lg border border-gray-700">
-                <table className="bg-gray-800 min-w-full">
-                  <thead className="bg-gray-700 sticky top-0">
-                    <tr>
-                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base whitespace-nowrap">Image</th>
-                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base min-w-[200px] lg:min-w-[300px]">Product Name</th>
-                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base whitespace-nowrap">Price</th>
-                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base whitespace-nowrap">Original Price</th>
-                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base whitespace-nowrap">Rating</th>
-                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base whitespace-nowrap">Sold</th>
-                      <th className="p-3 lg:p-4 font-semibold text-gray-300 text-left text-sm lg:text-base min-w-[150px]">Shop</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-700">
-                    {results.map((product) => (
-                      <tr key={product.product_id} className="hover:bg-gray-700 transition-colors duration-150">
-                        <td className="p-3 lg:p-4">
-                          <img 
-                            src={product.image} 
-                            alt={product.name} 
-                            className="rounded-md w-12 h-12 lg:w-16 lg:h-16 object-cover border border-gray-600"
-                            loading="lazy"
-                          />
-                        </td>
-                        <td className="p-3 lg:p-4">
-                          <a 
-                            href={product.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-green-400 hover:text-green-300 font-medium text-sm lg:text-base hover:underline transition-colors duration-150"
-                          >
-                            <span className="line-clamp-2">{product.name}</span>
-                          </a>
-                        </td>
-                        <td className="p-3 lg:p-4 text-green-400 font-semibold text-sm lg:text-base whitespace-nowrap">{product.real_price_text}</td>
-                        <td className="p-3 lg:p-4 text-gray-400 text-sm lg:text-base whitespace-nowrap">
-                          {product.original_price && product.original_price !== product.real_price_text ? (
-                            <span className="line-through">{product.original_price}</span>
-                          ) : (
-                            <span>-</span>
-                          )}
-                        </td>
-                        <td className="p-3 lg:p-4 text-yellow-400 text-sm lg:text-base whitespace-nowrap">{product.rating} ★</td>
-                        <td className="p-3 lg:p-4 text-gray-300 text-sm lg:text-base whitespace-nowrap">{product.sold_count}</td>
-                        <td className="p-3 lg:p-4">
-                          <a 
-                            href={product.shop.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-green-400 hover:text-green-300 hover:underline transition-colors duration-150"
-                          >
-                            <div className="flex items-center gap-1 text-sm lg:text-base">
-                              <span className="truncate">{product.shop.name}</span>
-                              {product.shop.is_official && (
-                                <span className="bg-green-600 text-white text-xs px-1 py-0.5 rounded flex-shrink-0">Official</span>
-                              )}
-                            </div>
-                          </a>
-                          <span className="block text-gray-400 text-xs lg:text-sm truncate">{product.shop.city}</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  {/* Rating and Sales */}
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 text-yellow-400">
+                        <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                          <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                        </svg>
+                        <span className="font-medium">{product.rating}</span>
+                      </div>
+                    </div>
+                    <span className="text-gray-400">{product.sold_count.toLocaleString()} sold</span>
+                  </div>
+
+                  {/* Shop Information */}
+                  <div className="pt-2 border-t border-gray-700">
+                    <a 
+                      href={product.shop.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="block hover:text-green-400 transition-colors duration-200"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-300 truncate">{product.shop.name}</p>
+                          <p className="text-xs text-gray-400 truncate">{product.shop.city}</p>
+                        </div>
+                        {product.shop.is_official && (
+                          <div className="ml-2 flex-shrink-0">
+                            <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                    </a>
+                  </div>
+                </div>
               </div>
-            </div>
-          </>
+            ))}
+          </div>
         ) : (
-          !loading && !error && <p className="text-gray-500 text-center">No results to show. Try a new search!</p>
+          !loading && !error && (
+            <div className="text-center py-12">
+              <div className="mx-auto w-24 h-24 mb-4 text-gray-600">
+                <svg fill="currentColor" viewBox="0 0 20 20" className="w-full h-full">
+                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <p className="text-gray-500 text-lg">No results to show</p>
+              <p className="text-gray-600 text-sm mt-1">Try searching for a different product</p>
+            </div>
+          )
         )}
       </div>
     </main>
