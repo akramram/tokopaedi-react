@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"from src.tokopaedi import search, SearchFilters; print(''Import successful'')\")",
+      "Bash(python -c \"from api.main import app; print(''API imports successful'')\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,6 +1,27 @@
 from dataclasses import dataclass, field, asdict
 from typing import List, Optional, Iterator
 
+def shop_resolver(shop_tier):
+    ''' Find shop tier by id and badge image '''
+    try:
+        shop_tier = int(shop_tier)
+    except:
+        if 'PM%20Pro%20Small.png' in shop_tier:
+            shop_tier = 3
+        elif 'official_store_badge' in shop_tier:
+            shop_tier = 2
+        else:
+            shop_tier = 1
+
+    if shop_tier == 1:
+        return 'Normal'
+    elif shop_tier == 2:
+        return 'Mall'
+    elif shop_tier == 3:
+        return 'Power Shop'
+    else:
+        return None
+
 @dataclass
 class ProductMedia:
     original: str
@@ -27,33 +48,60 @@ class ProductVariant:
 @dataclass
 class ProductData:
     product_id: int
+    product_sku: str
     product_name: str
     url: str
-    product_status: str
-    product_price: int
-    product_price_text: str
-    product_price_original: str
-    product_discount_percentage: str
-    weight: int
-    weight_unit: str
-    product_media: List[ProductMedia]
-    sold_count: int
-    rating: float
-    review_count: int
-    discussion_count: int
-    total_stock: int
-    etalase: str
-    etalase_url: str
-    category: str
-    sub_category: List[str]
-    product_option: List[ProductOption]
-    variants: List[ProductVariant]
-    shop_id: int
-    shop_name: str
-    shop_location: List[str]
+    main_image: Optional[str] = None
+    status: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[int] = None
+    price_text: Optional[str] = None
+    price_original: Optional[str] = None
+    discount_percentage: Optional[str] = None
+    weight: Optional[int] = None
+    weight_unit: Optional[str] = None
+    product_media: List[ProductMedia] = field(default_factory=list)
+    sold_count: Optional[int] = None
+    rating: Optional[float] = None
+    review_count: Optional[int] = None
+    discussion_count: Optional[int] = None
+    total_stock: Optional[int] = None
+    etalase: Optional[str] = None
+    etalase_url: Optional[str] = None
+    category: str = None
+    sub_category: Optional[List[str]] = None
+    product_option: Optional[List[ProductOption]] = None
+    variants: Optional[List[ProductVariant]] = None
+    shop: Optional['TokopaediShop'] = None
+    reviews: Optional[List['ProductReview']] = None
 
     def json(self):
         return asdict(self)
+
+    def enrich_details(self, debug: bool = False):
+        """Enrich this product with additional details by re-fetching from Tokopedia"""
+        from .get_product import get_product
+
+        if debug:
+            print(f"Enriching details for product ID: {self.product_id}")
+
+        detailed_product = get_product(product_id=self.product_id, debug=debug)
+        if detailed_product:
+            # Update all fields with the detailed information
+            for field_name, field_value in asdict(detailed_product).items():
+                if field_value is not None:
+                    setattr(self, field_name, field_value)
+
+    def enrich_reviews(self, max_result: int = 10, debug: bool = False):
+        """Enrich this product with customer reviews"""
+        from .get_reviews import get_reviews
+
+        if debug:
+            print(f"Enriching reviews for product ID: {self.product_id}")
+
+        reviews = get_reviews(product_id=self.product_id, max_count=max_result, debug=debug)
+        if reviews:
+            self.reviews = reviews
 
 @dataclass
 class ProductReview:
@@ -79,42 +127,26 @@ class TokopaediShop:
     name: str
     city: Optional[str]
     url: str
-    is_official: Optional[bool]
+    shop_type: str
+    is_official: Optional[bool] = None  # For backward compatibility
 
-@dataclass
-class ProductSearchResult:
-    product_id: int
-    product_sku:int
-    name: str
-    category: str
-    url: str
-    sold_count: Optional[int]
-    original_price: str
-    real_price: int
-    real_price_text: str
-    rating: Optional[float]
-    image: Optional[str]
-    shop: TokopaediShop
-    product_detail: Optional[ProductData] = None
-    product_reviews: Optional[List[ProductReview]] = None
-
-    def json(self):
-        return asdict(self)
+# Backward compatibility alias
+ProductSearchResult = ProductData
 
 class SearchResults:
-    def __init__(self, items: List[ProductSearchResult] = None):
+    def __init__(self, items: List[ProductData] = None):
         self.items = items or []
 
-    def append(self, item: ProductSearchResult) -> None:
+    def append(self, item: ProductData) -> None:
         self.items.append(item)
 
-    def extend(self, more: List[ProductSearchResult]) -> None:
+    def extend(self, more: List[ProductData]) -> None:
         self.items.extend(more)
 
-    def __getitem__(self, index) -> ProductSearchResult:
+    def __getitem__(self, index) -> ProductData:
         return self.items[index]
 
-    def __iter__(self) -> Iterator[ProductSearchResult]:
+    def __iter__(self) -> Iterator[ProductData]:
         return iter(self.items)
 
     def __len__(self) -> int:
@@ -136,3 +168,13 @@ class SearchResults:
             return NotImplemented
         self.extend(other.items)
         return self
+
+    def enrich_details(self, debug: bool = False):
+        """Enrich all products in the results with detailed information"""
+        for item in self.items:
+            item.enrich_details(debug=debug)
+
+    def enrich_reviews(self, max_result: int = 10, debug: bool = False):
+        """Enrich all products in the results with customer reviews"""
+        for item in self.items:
+            item.enrich_reviews(max_result=max_result, debug=debug)

@@ -1,6 +1,7 @@
 from typing import Optional, List
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import json
 # Ensure all necessary components from your scraper are imported
 from src.tokopaedi import search, get_product, get_reviews, SearchFilters
 
@@ -84,18 +85,10 @@ def search_products(
         )
         
         if not results:
-            return {[]}
+            return []
 
-        # --- FIX: Robustly handle inconsistent return types ---
-        data = results.json()
-        if isinstance(data, str):
-            parsed_results = json.loads(data)
-        else:
-            parsed_results = data # Assume it's already a dict/list
-        
-        # print(f"DEBUG: Data being sent to frontend: {json.dumps(parsed_results, indent=2)}")
-        
-        return parsed_results
+        # Return results as JSON - SearchResults.json() returns List[dict]
+        return results.json()
     except Exception as e:
         print(f"An error occurred during search: {e}")
         raise HTTPException(
@@ -114,12 +107,9 @@ def get_product_details(product_id: int):
         product_data = get_product(product_id=product_id)
         if not product_data:
             raise HTTPException(status_code=404, detail="Product not found.")
-        
-        # FIX: Robustly handle inconsistent return types
-        data = product_data.json()
-        if isinstance(data, str):
-            return json.loads(data)
-        return data
+
+        # Return the product data as JSON
+        return product_data.json()
     except Exception as e:
         print(f"An error occurred getting product {product_id}: {e}")
         raise HTTPException(
@@ -138,16 +128,9 @@ def get_product_reviews(product_id: int, max_result: int = 20):
         reviews = get_reviews(product_id=product_id, max_result=max_result)
         if reviews is None:
              return []
-        
-        # FIX: Robustly handle inconsistent return types
-        final_reviews = []
-        for review in reviews:
-            data = review.json()
-            if isinstance(data, str):
-                final_reviews.append(json.loads(data))
-            else:
-                final_reviews.append(data)
-        return final_reviews
+
+        # Return reviews as JSON - each review has .json() method
+        return [review.json() for review in reviews]
     except Exception as e:
         print(f"An error occurred getting reviews for {product_id}: {e}")
         raise HTTPException(

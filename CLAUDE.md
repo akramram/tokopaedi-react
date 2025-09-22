@@ -37,29 +37,36 @@ deploy.bat      # Windows deployment script
 
 ## Architecture
 
-### Backend Structure
+### Backend Structure (Updated v0.2.3)
 - **`backend/api/main.py`**: Vercel-compatible FastAPI app entry point
-- **`backend/src/tokopaedi/`**: Core scraping library
-  - `search.py`: Product search functionality
+- **`backend/src/tokopaedi/`**: Core scraping library (updated from upstream)
+  - `search.py`: Product search functionality with improved mobile pricing
   - `get_product.py`: Individual product details
   - `get_reviews.py`: Product reviews scraping
-  - `tokopaedi_types.py`: Type definitions
+  - `tokopaedi_types.py`: Type definitions with new unified ProductData model
   - `__init__.py`: SearchFilters dataclass and main exports
 - **`backend/vercel.json`**: Vercel deployment configuration
 - **`backend/requirements.txt`**: Python dependencies
 
 ### Frontend Structure
 - **`frontend/src/app/`**: Next.js App Router
-  - `page.tsx`: Main search interface with advanced filters
+  - `page.tsx`: Main search interface with advanced filters (updated for new API)
   - `layout.tsx`: Root layout component
   - `globals.css`: Tailwind CSS styles
 - **`frontend/next.config.ts`**: Static export config for GitHub Pages
 
 ### API Endpoints
 - `GET /`: Health check
-- `GET /search/{keyword}`: Search with advanced filters
-- `GET /product/{product_id}`: Product details
-- `GET /reviews/{product_id}`: Product reviews
+- `GET /search/{keyword}`: Search with advanced filters (returns ProductData[])
+- `GET /product/{product_id}`: Product details (returns ProductData)
+- `GET /reviews/{product_id}`: Product reviews (returns ProductReview[])
+
+### Updated Data Models (v0.2.3)
+**Breaking Changes**: Updated to match upstream v0.2.3 improvements:
+- Unified `ProductData` model (replaces `ProductSearchResult`)
+- Field name changes: `name` → `product_name`, `image` → `main_image`, `real_price` → `price`, etc.
+- Enhanced shop information with `shop_type` instead of just `is_official`
+- Added enrichment methods: `.enrich_details()` and `.enrich_reviews()`
 
 ### Environment Configuration
 - **Development**: Frontend on `localhost:3000`, Backend on `localhost:8000`
@@ -77,6 +84,7 @@ Modern Tokopedia-style interface with:
 - Responsive card grid layout
 - Mobile-optimized interactions
 - Loading states and error handling
+- Updated to use new field names from API
 
 ## Testing and Quality
 
@@ -88,6 +96,19 @@ python -m pytest tests/
 
 No specific test framework configured for frontend - use standard Next.js testing practices.
 
+## Recent Updates (v0.2.3 Integration)
+
+### Backend Improvements
+- Updated scraping library from upstream with improved mobile pricing accuracy
+- Enhanced user spoofing for better data accuracy
+- Unified ProductData model with enrichment capabilities
+- Better shop type detection and consistency
+
+### Frontend Compatibility
+- Updated TypeScript interfaces to match new API response structure
+- Maintained visual compatibility while using new field names
+- Enhanced shop badge display using shop_type information
+
 ## Important Notes
 
 - Frontend uses static export for GitHub Pages compatibility
@@ -95,3 +116,4 @@ No specific test framework configured for frontend - use standard Next.js testin
 - CORS configured for GitHub Pages deployment domain
 - Deployment scripts handle both frontend and backend deployment
 - Backend has 30-second timeout limit on Vercel
+- **Breaking change**: Updated field names require frontend adjustments when pulling from upstream

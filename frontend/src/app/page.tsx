@@ -6,18 +6,17 @@ import axios from 'axios';
 type searchResult = {
   product_id: number
   product_sku: string
-  name: string
+  product_name: string  // Changed from 'name' to 'product_name'
   category: string
   url: string
   sold_count: number
-  original_price: string
-  real_price: number
-  real_price_text: string
+  price_original: string  // Changed from 'original_price'
+  price: number  // Changed from 'real_price'
+  price_text: string  // Changed from 'real_price_text'
   rating: number
-  image: string
+  main_image: string  // Changed from 'image'
   shop: Shop
-  product_detail: unknown
-  product_reviews: unknown
+  reviews?: unknown  // New field
 }
 
 type Shop = {
@@ -25,7 +24,8 @@ type Shop = {
   name: string
   city: string
   url: string
-  is_official: boolean
+  shop_type: string  // Changed from 'is_official: boolean'
+  is_official?: boolean  // Optional for backward compatibility
 }
 
 const FilterCheckbox = ({ label, checked, onChange }: { label: string, checked: boolean, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
@@ -208,21 +208,21 @@ export default function Home() {
                     rel="noopener noreferrer"
                     className="block w-full h-full"
                   >
-                    <img 
-                      src={product.image} 
-                      alt={product.name} 
+                    <img
+                      src={product.main_image}
+                      alt={product.product_name} 
                       className="w-full h-full object-cover rounded-lg border border-gray-600 group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
                     />
                   </a>
                   {/* Discount Badge */}
-                  {product.original_price && product.original_price !== product.real_price_text && (
+                  {product.price_original && product.price_original !== product.price_text && (
                     <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                       SALE
                     </div>
                   )}
                   {/* Official Store Badge */}
-                  {product.shop.is_official && (
+                  {(product.shop.shop_type === 'Mall' || product.shop.is_official) && (
                     <div className="absolute top-2 right-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full">
                       Official
                     </div>
@@ -238,15 +238,15 @@ export default function Home() {
                     rel="noopener noreferrer" 
                     className="block text-white hover:text-green-400 font-medium text-sm leading-tight transition-colors duration-200"
                   >
-                    <h3 className="min-h-[3.75rem]">{product.name}</h3>
+                    <h3 className="min-h-[3.75rem]">{product.product_name}</h3>
                   </a>
 
                   {/* Price Section */}
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-green-400 font-bold text-lg">{product.real_price_text}</span>
-                      {product.original_price && product.original_price !== product.real_price_text && (
-                        <span className="text-gray-400 line-through text-sm">{product.original_price}</span>
+                      <span className="text-green-400 font-bold text-lg">{product.price_text}</span>
+                      {product.price_original && product.price_original !== product.price_text && (
+                        <span className="text-gray-400 line-through text-sm">{product.price_original}</span>
                       )}
                     </div>
                   </div>
@@ -277,7 +277,7 @@ export default function Home() {
                           <p className="text-sm font-medium text-gray-300 truncate">{product.shop.name}</p>
                           <p className="text-xs text-gray-400 truncate">{product.shop.city}</p>
                         </div>
-                        {product.shop.is_official && (
+                        {(product.shop.shop_type === 'Mall' || product.shop.is_official) && (
                           <div className="ml-2 flex-shrink-0">
                             <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />

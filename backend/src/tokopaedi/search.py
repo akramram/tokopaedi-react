@@ -7,7 +7,7 @@ import logging
 from dataclasses import dataclass
 from typing import Optional
 
-from .tokopaedi_types import SearchResults, ProductSearchResult, TokopaediShop
+from .tokopaedi_types import SearchResults, ProductData, TokopaediShop, ProductReview, shop_resolver
 from .custom_logging import setup_custom_logging
 from .get_fingerprint import randomize_fp
 
@@ -22,41 +22,41 @@ def search_extractor(result):
             shop_info = product.get('shop')
 
             product_id = product.get('id')
-            product_sku = product.get('stock', {}).get('ttsSKUID') 
+            product_sku = product.get('stock', {}).get('ttsSKUID')
             name = product.get('name')
             category = product.get('category',{}).get('name')
             url = product.get('url')
             sold_count = product.get('stock',{}).get('sold')
-            original_price = price_data.get('original')
-            real_price = price_data.get('number')
-            real_price_text = price_data.get('text')
+            price_original = price_data.get('original')
+            price = price_data.get('number')
+            price_text = price_data.get('text')
             rating = float(product.get('rating')) if product.get('rating') else None
-            image = product.get('mediaURL',{}).get('image700')
+            main_image = product.get('mediaURL',{}).get('image700')
 
             shop_id = shop_info.get('id')
             shop_name = shop_info.get('name')
             city = shop_info.get('city')
             shop_url = shop_info.get('url')
-            is_official = 'official_store_badge' in str(product.get('badge'))
+            shop_type = str(product.get('badge',{}).get('url'))
 
-            product_result.append(ProductSearchResult(
+            product_result.append(ProductData(
                     product_id=product_id,
                     product_sku=product_sku,
-                    name=name,
+                    product_name=name,
                     category=category,
                     url=url,
                     sold_count=sold_count,
-                    original_price=original_price,
-                    real_price=real_price,
-                    real_price_text=real_price_text,
+                    price_original=price_original,
+                    price=price,
+                    price_text=price_text,
                     rating=rating,
-                    image=image,
+                    main_image=main_image,
                     shop=TokopaediShop(
                             shop_id=shop_id,
                             name=shop_name,
                             city=city,
                             url=shop_url,
-                            is_official=is_official
+                            shop_type=shop_resolver(shop_type)
                         )
                 ))
         return product_result
@@ -84,10 +84,12 @@ def merge_params(original, additional=None):
     return "&".join(f"{k}={quote(str(v), safe=',')}" for k, v in merged.items())
 
 def search(keyword="zenbook 14 32gb", max_result=100, result_count=0, base_param=None, next_param=None, filters=None, debug=False):
+    user_id, fingerprint = randomize_fp()
     headers = {
         'Host': 'gql.tokopedia.com',
         'Os_type': '2',
-        'Fingerprint-Data': randomize_fp(),
+        'Fingerprint-Data': fingerprint,
+        'X-Tkpd-Userid': user_id,
         'X-Tkpd-Path': '/graphql/SearchResult/getProductResult',
         'X-Method': 'POST',
         'X-Device': 'ios-2.318.0',
@@ -139,7 +141,7 @@ def search(keyword="zenbook 14 32gb", max_result=100, result_count=0, base_param
                 result_count += len(result)
                 if debug:
                     for line in result:
-                        logger.search(f'{line.product_id} - {line.name[0:40]}...')
+                        logger.search(f'{line.product_id} - {line.product_name[0:40]}...')
                 if result_count >= max_result:
                     return dedupe(result)
 
