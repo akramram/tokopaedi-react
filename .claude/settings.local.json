@@ -1,8 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -c \"from src.tokopaedi import search, SearchFilters; print(''Import successful'')\")",
-      "Bash(python -c \"from api.main import app; print(''API imports successful'')\")"
+      "Bash(python -c \"\nfrom api.main import app\nfrom fastapi.testclient import TestClient\n\nclient = TestClient(app)\n\n# Test the search endpoint\nprint(''Testing search endpoint...'')\nresponse = client.get(''/search/laptop?max_result=2'')\nprint(f''Status: {response.status_code}'')\nif response.status_code == 200:\n    data = response.json()\n    print(f''Results: {len(data)}'')\n    if data:\n        print(f''First result: {data[0][\"\"product_name\"\"]}'')\n        print(f''Price: {data[0][\"\"price_text\"\"]}'')\nelse:\n    print(f''Error: {response.text}'')\n\")"
     ],
     "deny": [],
     "ask": []

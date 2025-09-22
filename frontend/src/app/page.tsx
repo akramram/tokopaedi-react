@@ -82,7 +82,6 @@ export default function Home() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://tokopaedibe.vercel.app';
       const response = await axios.get(`${apiUrl}/search/${keyword}`, { params });
 
-      console.log('API Response Data:', response.data);
       if (Array.isArray(response.data)) {
         setResults(response.data);
       } else {
@@ -194,14 +193,14 @@ export default function Home() {
         {error && <p className="my-4 text-red-500 text-center">{error}</p>}
 
         {!loading && results.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+          <div className="gap-3 sm:gap-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {results.map((product) => (
               <div 
                 key={product.product_id} 
-                className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 hover:border-green-500 hover:shadow-xl transition-all duration-300 overflow-hidden group touch-manipulation active:scale-[0.98]"
+                className="group bg-gray-800 shadow-lg hover:shadow-xl border border-gray-700 hover:border-green-500 rounded-xl overflow-hidden active:scale-[0.98] transition-all duration-300 touch-manipulation"
               >
                 {/* Product Image Section */}
-                <div className="relative bg-gray-700 aspect-square p-4">
+                <div className="relative bg-gray-700 p-4 aspect-square">
                   <a 
                     href={product.url} 
                     target="_blank" 
@@ -211,32 +210,32 @@ export default function Home() {
                     <img
                       src={product.main_image}
                       alt={product.product_name} 
-                      className="w-full h-full object-cover rounded-lg border border-gray-600 group-hover:scale-105 transition-transform duration-300"
+                      className="border border-gray-600 rounded-lg w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
                     />
                   </a>
                   {/* Discount Badge */}
                   {product.price_original && product.price_original !== product.price_text && (
-                    <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    <div className="top-2 left-2 absolute bg-red-500 px-2 py-1 rounded-full font-bold text-white text-xs">
                       SALE
                     </div>
                   )}
                   {/* Official Store Badge */}
                   {(product.shop.shop_type === 'Mall' || product.shop.is_official) && (
-                    <div className="absolute top-2 right-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    <div className="top-2 right-2 absolute bg-green-600 px-2 py-1 rounded-full font-bold text-white text-xs">
                       Official
                     </div>
                   )}
                 </div>
 
                 {/* Product Information Section */}
-                <div className="p-4 space-y-3">
+                <div className="space-y-3 p-4">
                   {/* Product Title */}
                   <a 
                     href={product.url} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="block text-white hover:text-green-400 font-medium text-sm leading-tight transition-colors duration-200"
+                    className="block font-medium text-white hover:text-green-400 text-sm leading-tight transition-colors duration-200"
                   >
                     <h3 className="min-h-[3.75rem]">{product.product_name}</h3>
                   </a>
@@ -244,18 +243,18 @@ export default function Home() {
                   {/* Price Section */}
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-green-400 font-bold text-lg">{product.price_text}</span>
+                      <span className="font-bold text-green-400 text-lg">{product.price_text}</span>
                       {product.price_original && product.price_original !== product.price_text && (
-                        <span className="text-gray-400 line-through text-sm">{product.price_original}</span>
+                        <span className="text-gray-400 text-sm line-through">{product.price_original}</span>
                       )}
                     </div>
                   </div>
 
                   {/* Rating and Sales */}
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="flex justify-between items-center text-sm">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1 text-yellow-400">
-                        <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                        <svg className="fill-current w-4 h-4" viewBox="0 0 20 20">
                           <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
                         </svg>
                         <span className="font-medium">{product.rating}</span>
@@ -265,20 +264,20 @@ export default function Home() {
                   </div>
 
                   {/* Shop Information */}
-                  <div className="pt-2 border-t border-gray-700">
+                  <div className="pt-2 border-gray-700 border-t">
                     <a 
                       href={product.shop.url} 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="block hover:text-green-400 transition-colors duration-200"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-gray-300 truncate">{product.shop.name}</p>
-                          <p className="text-xs text-gray-400 truncate">{product.shop.city}</p>
+                      <div className="flex justify-between items-center">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-300 text-sm truncate">{product.shop.name}</p>
+                          <p className="text-gray-400 text-xs truncate">{product.shop.city}</p>
                         </div>
                         {(product.shop.shop_type === 'Mall' || product.shop.is_official) && (
-                          <div className="ml-2 flex-shrink-0">
+                          <div className="flex-shrink-0 ml-2">
                             <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
@@ -293,14 +292,14 @@ export default function Home() {
           </div>
         ) : (
           !loading && !error && (
-            <div className="text-center py-12">
-              <div className="mx-auto w-24 h-24 mb-4 text-gray-600">
+            <div className="py-12 text-center">
+              <div className="mx-auto mb-4 w-24 h-24 text-gray-600">
                 <svg fill="currentColor" viewBox="0 0 20 20" className="w-full h-full">
                   <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
                 </svg>
               </div>
               <p className="text-gray-500 text-lg">No results to show</p>
-              <p className="text-gray-600 text-sm mt-1">Try searching for a different product</p>
+              <p className="mt-1 text-gray-600 text-sm">Try searching for a different product</p>
             </div>
           )
         )}
