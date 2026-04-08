@@ -44,6 +44,7 @@ const FilterCheckbox = ({ label, checked, onChange }: { label: string, checked: 
 export default function Home() {
   const [keyword, setKeyword] = useState('');
   const [results, setResults] = useState<searchResult[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -59,14 +60,20 @@ export default function Home() {
   const [bebasOngkirExtra, setBebasOngkirExtra] = useState(false);
 
 
-  const handleSearch = async () => {
+  const handleSearch = async (pageNumber: number = 1) => {
     if (!keyword) return;
     setLoading(true);
     setError(null);
-    setResults([]);
+    setCurrentPage(pageNumber);
+
+    // If starting a fresh search, clear results
+    if (pageNumber === 1) {
+      setResults([]);
+    }
 
     try {
       const params = {
+        page: pageNumber,
         minPrice: minPrice || undefined,
         maxPrice: maxPrice || undefined,
         sortBy,
@@ -84,12 +91,15 @@ export default function Home() {
 
       if (Array.isArray(response.data)) {
         setResults(response.data);
+        // Scroll to top on successful search/page change
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         console.error("API did not return an array:", response.data);
         setResults([]);
       }
     } catch (err) {
       console.error("Error fetching search results:", err);
+      setError("Failed to fetch results. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -110,12 +120,12 @@ export default function Home() {
             type="text"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch(1)}
             placeholder="Search for a product..."
             className="bg-gray-800 px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full max-w-lg"
           />
           <button
-            onClick={handleSearch}
+            onClick={() => handleSearch(1)}
             disabled={loading}
             className="bg-green-600 hover:bg-green-700 disabled:bg-gray-500 px-6 py-2 rounded-lg font-semibold text-white transition-colors disabled:cursor-not-allowed shrink-0"
           >
@@ -291,7 +301,7 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          !loading && !error && (
+          !loading && !error && keyword && (
             <div className="py-12 text-center">
               <div className="mx-auto mb-4 w-24 h-24 text-gray-600">
                 <svg fill="currentColor" viewBox="0 0 20 20" className="w-full h-full">
@@ -302,6 +312,32 @@ export default function Home() {
               <p className="mt-1 text-gray-600 text-sm">Try searching for a different product</p>
             </div>
           )
+        )}
+
+        {/* Pagination Controls */}
+        {!loading && results.length > 0 && (
+          <div className="flex justify-center items-center gap-4 mt-12 py-8 border-gray-800 border-t">
+            <button
+              onClick={() => handleSearch(currentPage - 1)}
+              disabled={currentPage === 1 || loading}
+              className="bg-gray-800 hover:bg-gray-700 disabled:bg-gray-900 px-4 py-2 border border-gray-700 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 text-sm">Page</span>
+              <span className="bg-gray-800 px-3 py-1 border border-gray-700 rounded-md font-bold text-green-400">
+                {currentPage}
+              </span>
+            </div>
+            <button
+              onClick={() => handleSearch(currentPage + 1)}
+              disabled={loading || results.length < 20}
+              className="bg-gray-800 hover:bg-gray-700 disabled:bg-gray-900 px-4 py-2 border border-gray-700 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
         )}
       </div>
     </main>
