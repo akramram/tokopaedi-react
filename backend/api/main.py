@@ -32,7 +32,8 @@ def read_root():
 @app.get("/search/{keyword}")
 def search_products(
     keyword: str,
-    max_result: int = 10,
+    max_result: int = 20,
+    page: int = Query(1),
     # Define all query parameters with defaults and aliases for the frontend
     min_price: int = Query(0, alias="minPrice"),
     max_price: int = Query(0, alias="maxPrice"),
@@ -81,6 +82,7 @@ def search_products(
         results = search(
             keyword,
             max_result=max_result,
+            page=page,
             filters=filters
         )
         
