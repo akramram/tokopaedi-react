@@ -8,6 +8,7 @@ A modern full-stack web application for scraping and searching Tokopedia product
 - **Real-time Results**: Fast and responsive product data retrieval
 - **Modern UI**: Clean, responsive interface built with Next.js and Tailwind CSS
 - **Advanced Filtering**: Price range, ratings, conditions, and more
+- **Data Enrichment**: Integrated support for fetching detailed product information and customer reviews
 - **Cross-platform**: Works on desktop and mobile devices
 
 ## 🛠️ Tech Stack
@@ -32,7 +33,7 @@ tokopaedi-react/
 │   ├── public/        # Static assets
 │   └── package.json   # Frontend dependencies
 ├── backend/           # FastAPI backend application
-│   ├── src/           # Backend source code
+│   ├── src/           # Scraper core library (tokopaedi)
 │   ├── main.py        # FastAPI application entry point
 │   └── requirements.txt # Python dependencies
 ├── .github/workflows/ # GitHub Actions for deployment
@@ -125,6 +126,15 @@ Once the backend is running, visit `http://localhost:8000/docs` for interactive 
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## 📋 Scraper Core (from upstream)
+
+The core scraping logic is based on the `tokopaedi` library (v0.2.3).
+
+### Features
+- **Serializable Results**: Dataclass-based results with `.json()` for easy export.
+- **Data Enrichment**: `.enrich_details()` and `.enrich_reviews()` methods on individual products or search results.
+- **Mobile Price Accuracy**: Spoofer for accurate mobile pricing.
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -132,17 +142,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## ⚠️ Disclaimer
 
 This tool is for educational purposes only. Please respect Tokopedia's terms of service and implement appropriate rate limiting and ethical scraping practices.
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **CORS Errors**: Ensure backend CORS settings include your frontend URL
-2. **Build Failures**: Check Node.js and Python versions
-3. **API Not Responding**: Verify backend is running and accessible
-
-For more troubleshooting tips, see [DEPLOYMENT.md](./DEPLOYMENT.md).
-
----
 
 **Made with ❤️ using Next.js and FastAPI**
